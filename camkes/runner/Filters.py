@@ -282,6 +282,8 @@ def tcb_properties(ast, cspaces, options, **_):
             # are designed to be blocked when not handling a fault.
             if is_fault_handler(tcb.name):
                 tcb.prio = 255
+                # If the parent thread is running on a core, its fault handler should too
+                maybe_set_property_from_configuration(assembly, perspective, tcb, 'affinity', 'affinity_attribute', 'affinity')
                 continue
 
             perspective = Perspective(group=group, tcb=tcb.name)

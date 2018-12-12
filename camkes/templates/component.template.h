@@ -42,6 +42,7 @@
 /*- endfor -*/
 
 const char *get_instance_name(void);
+int get_instance_core(void);
 
 /* Attributes */
 /*- set myconf = configuration[me.name] -*/

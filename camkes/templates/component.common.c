@@ -79,6 +79,14 @@ const char *get_instance_name(void) {
     return name;
 }
 
+int get_instance_core(void) {
+/*- if 'affinity' in configuration[me.name].keys() -*/
+    return /*? configuration[me.name].get('affinity') ?*/;
+/*- else -*/
+    return 0;
+/*- endif -*/
+}
+
 /* DMA functionality. */
 
 /*# Determine the size of the DMA pool. Note that we make no attempt to
@@ -562,6 +570,7 @@ void USED _camkes_tls_init(int thread_id) {
             /*- set p = Perspective(instance=me.name, interface=t.interface.name, intra_index=t.intra_index) -*/
 
             /*- if options.realtime -*/
+                /*- set sc_final = 0 -*/
                 /*- if configuration[me.name].get(p['passive_attribute'], False) -*/
                     /*# Passive thread #*/
                     /*- do passive_tcbs.__setitem__(prefix, tcb) -*/
@@ -569,6 +578,7 @@ void USED _camkes_tls_init(int thread_id) {
                 /*- else -*/
                     /*# Non-passive thread - create its scheduling context #*/
                     /*- set sc = alloc('%s_sc' % prefix, seL4_SchedContextObject) -*/
+                    /*- set sc_final = sc -*/
                 /*- endif -*/
             /*- endif -*/
 
@@ -588,6 +598,11 @@ void USED _camkes_tls_init(int thread_id) {
                 /*? macros.save_ipc_buffer_address(p['ipc_buffer_symbol']) ?*/
                 camkes_get_tls()->tcb_cap = /*? tcb ?*/;
                 camkes_get_tls()->thread_index = /*? index ?*/ + 2;
+            /*- if options.realtime -*/
+                /*- if configuration[me.name].get(p['passive_attribute'], True) -*/
+                camkes_get_tls()->sc_cap = /*? sc_final ?*/;
+                /*- endif -*/
+            /*- endif -*/
                 exit(post_main(thread_id));
                 break;
             }

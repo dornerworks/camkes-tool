@@ -109,6 +109,18 @@ if ((${CAmkESDefaultPriority} LESS 0) OR (${CAmkESDefaultPriority} GREATER 255))
     message(FATAL_ERROR "CAmkESDefaultPriority must be [0, 255]")
 endif()
 
+config_string(CAmkESDefaultMaxPriority CAMKES_DEFAULT_MAX_PRIORITY
+    "Default mcp for component threads if this is not overridden via an
+    attribute. Generally you want to set this as high as possible due to
+    the suboptimal seL4 scheduler."
+    # Default to one less than max prio to avoid interleaving with the CapDL intialiser
+    DEFAULT 254
+    UNQUOTE
+)
+if ((${CAmkESDefaultMaxPriority} LESS ${CAmkESDefaultPriority}) OR (${CAmkESDefaultMaxPriority} GREATER 255))
+    message(FATAL_ERROR "CAmkESDefaultMaxPriority must be [DefaultPriority, 255]")
+endif()
+
 add_config_library(camkes_config "${configure_string}")
 
 # These options are not declared with the config_* system because they only need to exist
@@ -499,6 +511,7 @@ function(GenerateCAmkESRootserver)
         --platform seL4
         --architecture ${KernelSel4Arch}
         --default-priority ${CAmkESDefaultPriority}
+        --default-max-priority ${CAmkESDefaultMaxPriority}
         --default-affinity ${CAmkESDefaultAffinity}
         --default-stack-size ${CAmkESDefaultStackSize}
     )

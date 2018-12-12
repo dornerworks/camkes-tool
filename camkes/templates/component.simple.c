@@ -34,8 +34,14 @@
 /*- set self_cnode = alloc_cap('cnode', my_cnode, write=true) -*/
 /*- set self_pd = alloc_cap('my_pd_cap', my_pd, write=true) -*/
 
+/*- if options.realtime -*/
+/*- set sched_ctrl_list = [] -*/
 /*- if 'sched_ctrl' in configuration[me.name].keys() -*/
-    /*- set sched_control = alloc('sched_control', type=seL4_SchedControl, core=configuration[me.name].get('sched_ctrl')) -*/
+    /*- for sched_ctrl_core in configuration[me.name].get('sched_ctrl', []) -*/
+         /*- set sched_control = alloc('sched_control_%d' % sched_ctrl_core, type=seL4_SchedControl, core=sched_ctrl_core) -*/
+         /*- do sched_ctrl_list.append((sched_ctrl_core, sched_control)) -*/
+    /*- endfor -*/
+/*- endif -*/
 /*- endif -*/
 
 /*- set extrabi_list = [] -*/
@@ -308,11 +314,11 @@ static uint8_t simple_camkes_cnode_size(void *data) {
     /*- endif -*/
 }
 
-static seL4_CPtr simple_camkes_get_IOPort_cap(void *data, uint16_t start_port, uint16_t end_port) {
+static seL4_Error simple_camkes_get_IOPort_cap(void *data, uint16_t start_port, uint16_t end_port, seL4_Word root, seL4_Word dest, seL4_Word depth) {
     assert(start_port <= end_port);
     /*- for cap, start, end in ioports -*/
         if (start_port >= /*? start ?*/ && end_port <= /*? end ?*/) {
-            return /*? cap ?*/;
+            return seL4_CNode_Copy(root, dest, depth, root, /*? cap ?*/, CONFIG_WORD_SIZE, seL4_AllRights);
         }
     /*- endfor -*/
     ERR(camkes_error, ((camkes_error_t){
@@ -320,9 +326,9 @@ static seL4_CPtr simple_camkes_get_IOPort_cap(void *data, uint16_t start_port, u
             .instance = "/*? me.name ?*/",
             .description = "unable to find IO port cap",
         }), ({
-            return 0;
+            return seL4_FailedLookup;
         }));
-    return 0;
+    return seL4_FailedLookup;
 }
 
 #ifdef CONFIG_IOMMU
@@ -460,13 +466,30 @@ static ssize_t camkes_get_extended_bootinfo(void *data, seL4_Word type, void *de
     return -1;
 }
 
-static UNUSED seL4_CPtr camkes_simple_sched_ctrl(void *data, seL4_Word core) {
-    /*- if 'sched_ctrl' in configuration[me.name].keys() -*/
-    if (core == /*? configuration[me.name].get('sched_ctrl') ?*/) {
-        return /*? sched_control ?*/;
+static UNUSED seL4_CPtr camkes_simple_sched_ctrl(void *data, int core) {
+    /*- if options.realtime -*/
+    /*- for core, capability in sched_ctrl_list -*/
+    if (core == /*? core ?*/) {
+        return /*? capability ?*/;
     }
+    /*- endfor -*/
     /*- endif -*/
+
     return seL4_CapNull;
+}
+
+/*# This function returns the highest available
+    core capability given to the component, plus
+    1 for zero index compatibility, since the
+    simple library is expecting the total number
+    of cores.
+#*/
+static int camkes_simple_core_count(void *data) {
+    /*- if len(sched_ctrl_list) > 0 -*/
+    return /*? max(sched_ctrl_list)[0] ?*/ + 1;
+    /*- else -*/
+    return 0;
+    /*- endif -*/
 }
 
 void camkes_make_simple(simple_t *simple) {
@@ -506,6 +529,7 @@ void camkes_make_simple(simple_t *simple) {
     simple->userimage_count = /*&simple_camkes_userimage_count*/NULL;
     simple->nth_userimage = /*&simple_camkes_nth_userimage*/NULL;
     simple->extended_bootinfo = &camkes_get_extended_bootinfo;
+    simple->core_count = &camkes_simple_core_count;
 #ifdef CONFIG_KERNEL_RT
     simple->sched_ctrl = &camkes_simple_sched_ctrl;
 #endif
