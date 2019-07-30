@@ -80,6 +80,14 @@ const char *get_instance_name(void) {
     return name;
 }
 
+int get_instance_affinity(void) {
+/*- if 'affinity' in configuration[me.name].keys() -*/
+    return /*? configuration[me.name].get('affinity') ?*/;
+/*- else -*/
+    return 0;
+/*- endif -*/
+}
+
 /*- set cnode_size = configuration[me.address_space].get('cnode_size_bits') -*/
 /*- if cnode_size -*/
         /*- if isinstance(cnode_size, six.string_types) -*/
