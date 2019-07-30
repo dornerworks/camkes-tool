@@ -493,12 +493,19 @@ else()
     set(CAPDL_LINKER_ALLOC_OPT "--dynamic-alloc")
     set(CAPDL_LINKER_UNTYPED_OPT "")
 endif()
+
+set(arch ${KernelSel4Arch})
+
+if(KernelArmHypervisorSupport AND KernelArmPASizeBits40 AND KernelSel4ArchAarch64)
+    set(arch "aarch64-40pa")
+endif()
+
 add_custom_command(
     OUTPUT ${CAMKES_CDL_TARGET} ${CMAKE_CURRENT_BINARY_DIR}/object-final.pickle
     COMMAND
         ${CAPDL_LINKER}
             "--object-sizes=$<TARGET_PROPERTY:object_sizes,FILE_PATH>"
-            --architecture ${KernelSel4Arch}
+            --architecture ${arch}
             gen_cdl
             "--manifest-in=${CMAKE_CURRENT_BINARY_DIR}/object.pickle"
             "--save-object-state=${CMAKE_CURRENT_BINARY_DIR}/object-final.pickle"

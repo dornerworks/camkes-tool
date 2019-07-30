@@ -182,6 +182,11 @@ function(set_camkes_render_flags_from_config list)
     )
 
     set(local_flags "${${list}}")
+    set(arch ${KernelSel4Arch})
+
+    if(KernelArmHypervisorSupport AND KernelArmPASizeBits40 AND KernelSel4ArchAarch64)
+        set(arch "aarch64-40pa")
+    endif()
 
     list(
         APPEND
@@ -189,7 +194,7 @@ function(set_camkes_render_flags_from_config list)
             --platform
             seL4
             --architecture
-            ${KernelSel4Arch}
+            ${arch}
             --default-priority
             ${CAmkESDefaultPriority}
             --default-affinity
