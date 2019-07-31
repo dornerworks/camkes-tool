@@ -154,6 +154,11 @@
     /*- set asidpool = alloc('asid_pool', seL4_ASID_Pool) -*/
 /*- endif -*/
 
+/*# Allocate IRQControl cap #*/
+/*- if configuration and configuration[me.name].get('irq_control') -*/
+    /*- set irqcontrol = alloc('irq_control', seL4_IRQControl) -*/
+/*- endif -*/
+
 /*- set irq_notification_object = alloc_obj('irq_notification_obj', seL4_NotificationObject) -*/
 /*- set irq_notification = alloc_cap('irq_notification_obj', irq_notification_object, read=True) -*/
 /*- set irqs = [] -*/
@@ -291,6 +296,10 @@ static seL4_CPtr simple_camkes_init_cap(void *data, seL4_CPtr cap) {
         return /*? self_pd ?*/;
     case seL4_CapInitThreadTCB:
         return camkes->inittcb;
+/*- if configuration and configuration[me.name].get('irq_control') -*/
+    case seL4_CapIRQControl:
+        return /*? irqcontrol ?*/;
+/*- endif -*/
     /*- if options.realtime -*/
     case seL4_CapInitThreadSC:
         return camkes->initsc;
