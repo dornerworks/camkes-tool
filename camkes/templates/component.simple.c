@@ -291,7 +291,7 @@ static seL4_CPtr simple_camkes_init_cap(void *data, seL4_CPtr cap) {
         return camkes->initsc;
     /*- endif -*/
     default:
-        assert(!"Unsupported init_cap requested");
+        return seL4_FailedLookup;
     }
     return 0;
 }
