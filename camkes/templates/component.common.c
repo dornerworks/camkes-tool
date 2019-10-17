@@ -80,6 +80,14 @@ const char *get_instance_name(void) {
     return name;
 }
 
+int get_instance_id(void) {
+    /*- if 'id' in configuration[me.name].keys() -*/
+    return /*? configuration[me.name].get('id') ?*/;
+    /*- else -*/
+    return 0;
+    /*- endif -*/
+}
+
 int get_instance_affinity(void) {
 /*- if 'affinity' in configuration[me.name].keys() -*/
     return /*? configuration[me.name].get('affinity') ?*/;
