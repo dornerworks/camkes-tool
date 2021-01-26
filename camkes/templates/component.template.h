@@ -25,6 +25,7 @@
 const char *get_instance_name(void);
 int get_instance_id(void);
 int get_instance_affinity(void);
+int get_instance_size_pcpus_list(void);
 
 /* Attributes */
 

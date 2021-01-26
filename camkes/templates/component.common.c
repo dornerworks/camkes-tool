@@ -111,6 +111,14 @@ seL4_CPtr camkes_get_smc_cap(seL4_Word smc_call){
 }
 #endif
 
+int get_instance_size_pcpus_list(void) {
+/*- if 'pcpus' in configuration[me.name].keys() -*/
+    return /*? len(configuration[me.name].get('pcpus')) ?*/;
+/*- else -*/
+    return 0;
+/*- endif -*/
+}
+
 /*- set cnode_size = configuration[me.address_space].get('cnode_size_bits') -*/
 /*- if cnode_size -*/
         /*- if isinstance(cnode_size, six.string_types) -*/
