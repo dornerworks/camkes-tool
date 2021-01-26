@@ -30,6 +30,8 @@
 /*- set self_cnode = alloc_cap('cnode', my_cnode, write=true) -*/
 /*- set self_pd = alloc_cap('my_pd_cap', my_pd, write=true) -*/
 
+/*- set self_dom = alloc('domain_control', type=seL4_DomainControl) -*/
+
 /*- if options.realtime -*/
 /*- if 'sched_ctrl' in configuration[me.name].keys() -*/
     /*- set sched_control = alloc('sched_control', type=seL4_SchedControl, core=configuration[me.name].get('sched_ctrl')) -*/
@@ -290,6 +292,8 @@ static seL4_CPtr simple_camkes_init_cap(void *data, seL4_CPtr cap) {
     case seL4_CapInitThreadSC:
         return camkes->initsc;
     /*- endif -*/
+    case seL4_CapDomain:
+        return /*? self_dom ?*/;
     default:
         return seL4_FailedLookup;
     }

@@ -133,6 +133,14 @@ int get_instance_size_pcpus_list(void) {
 /*- endif -*/
 }
 
+int get_instance_domain(void) {
+    /*- if 'domain' in configuration[me.name].keys() -*/
+    return /*? configuration[me.name].get('domain') ?*/;
+    /*- else -*/
+    return 0;
+    /*- endif -*/
+}
+
 /*- set cnode_size = configuration[me.address_space].get('cnode_size_bits') -*/
 /*- if cnode_size -*/
         /*- if isinstance(cnode_size, six.string_types) -*/
@@ -544,6 +552,11 @@ static void CONSTRUCTOR(CAMKES_SYSCALL_CONSTRUCTOR_PRIORITY+1) init(void) {
     /*- else -*/
         /*- do thread_names.__setitem__(tcb, t.interface.name) -*/
         /*- do macros.set_tcb_properties(_tcb, options, configuration[me.name], "%s_" % t.interface.name) -*/
+    /*- endif -*/
+
+    /*- set thread_domain = configuration[me.name].get("domain") -*/
+    /*- if thread_domain -*/
+        /*- do _tcb.__setattr__('domain', thread_domain) -*/
     /*- endif -*/
 
 
