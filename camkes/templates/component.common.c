@@ -48,6 +48,20 @@
 #endif
 /*- endif -*/
 
+/*- if 'num_vcpus' in configuration[me.name].keys() -*/
+#if(/*? configuration[me.name].get('num_vcpus') ?*/ > CONFIG_MAX_NUM_NODES)
+#error "Invalid Number of VCPUs"
+#endif
+/*- endif -*/
+
+/*- if 'pcpus' in configuration[me.name].keys() -*/
+    /*- for c in configuration[me.name].get('pcpus') -*/
+#if(/*? c ?*/  >= CONFIG_MAX_NUM_NODES)
+#error "Invalid CPU value of /*? c ?*/ in PCPU list"
+#endif
+    /*- endfor -*/
+/*- endif -*/
+
 static void (* _putchar)(int c);
 
 void set_putchar(void (*putchar)(int c)) {
