@@ -33,8 +33,12 @@
 /*- set self_dom = alloc('domain_control', type=seL4_DomainControl) -*/
 
 /*- if options.realtime -*/
+/*- set sched_ctrl_list = [] -*/
 /*- if 'sched_ctrl' in configuration[me.name].keys() -*/
-    /*- set sched_control = alloc('sched_control', type=seL4_SchedControl, core=configuration[me.name].get('sched_ctrl')) -*/
+    /*- for sched_ctrl_core in configuration[me.name].get('sched_ctrl', []) -*/
+        /*- set sched_control = alloc('sched_control_%d' % sched_ctrl_core, type=seL4_SchedControl, core=sched_ctrl_core) -*/
+        /*- do sched_ctrl_list.append((sched_ctrl_core, sched_control)) -*/
+    /*- endfor -*/
 /*- endif -*/
 /*- endif -*/
 
@@ -467,11 +471,11 @@ static ssize_t camkes_get_extended_bootinfo(void *data, seL4_Word type, void *de
 
 static UNUSED seL4_CPtr camkes_simple_sched_ctrl(void *data, int core) {
     /*- if options.realtime -*/
-    /*- if 'sched_ctrl' in configuration[me.name].keys() -*/
-    if (core == /*? configuration[me.name].get('sched_ctrl') ?*/) {
-        return /*? sched_control ?*/;
+    /*- for core, capability in sched_ctrl_list -*/
+    if (core == /*? core ?*/) {
+        return /*? capability ?*/;
     }
-    /*- endif -*/
+    /*- endfor -*/
     /*- endif -*/
     return seL4_CapNull;
 }
