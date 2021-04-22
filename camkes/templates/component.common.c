@@ -62,6 +62,42 @@
     /*- endfor -*/
 /*- endif -*/
 
+#ifdef CONFIG_KERNEL_MCS
+/*- if 'vcpu_periods' in configuration[me.name].keys() -*/
+    /*- for p in configuration[me.name].get('vcpu_periods') -*/
+#if(/*? p ?*/  <= 0)
+#error "Period must be positive and greater than zero"
+#endif
+    /*- endfor -*/
+
+#if(/*? len(configuration[me.name].get('vcpu_periods')) ?*/ != /*? configuration[me.name].get('num_vcpus') ?*/)
+#error "Number of vcpu periods is not equal to the number of vcpus specified"
+#endif
+/*- endif -*/
+
+/*- if 'vcpu_budgets' in configuration[me.name].keys() -*/
+    /*- for b in configuration[me.name].get('vcpu_budgets') -*/
+#if(/*? b ?*/  <= 0)
+#error "Budget must be positive and greater than zero"
+#endif
+    /*- endfor -*/
+
+#if(/*? len(configuration[me.name].get('vcpu_budgets')) ?*/ != /*? configuration[me.name].get('num_vcpus') ?*/)
+#error "Number of vcpu budgets is not equal to the number of vcpus specified"
+#endif
+/*- endif -*/
+
+/*- if ('vcpu_periods' in configuration[me.name].keys()) and ('vcpu_budgets' in configuration[me.name].keys()) -*/
+    /*- set the_periods = configuration[me.name].get('vcpu_periods') -*/
+    /*- set the_budgets = configuration[me.name].get('vcpu_budgets') -*/
+    /*- for i in range(len(the_periods)) -*/
+#if(/*? the_budgets[i] ?*/ > /*? the_periods[i] ?*/)
+#error "Budget for vcpu /*? i ?*/ cannot be greater than it's period"
+#endif
+    /*- endfor -*/
+/*- endif -*/
+#endif
+
 static void (* _putchar)(int c);
 
 void set_putchar(void (*putchar)(int c)) {
