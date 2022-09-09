@@ -263,7 +263,9 @@ int camkes_virtqueue_device_gather_copy_buffer(virtqueue_device_t *vq, virtqueue
             return -1;
         }
         to_copy = size - sent < buf_size ? size - sent : buf_size;
-        memcpy(buffer + sent, avail_buf, to_copy);
+        if (NULL != buffer) {
+            memcpy(buffer + sent, avail_buf, to_copy);
+        }
         sent += to_copy;
     }
     virtqueue_add_used_buf(vq, handle, sent);
