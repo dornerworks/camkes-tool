@@ -112,7 +112,8 @@ int camkes_virtqueue_driver_init_with_recv(virtqueue_driver_t *driver, unsigned 
 
     return camkes_virtqueue_driver_init_common(driver, channel->channel_buffer, channel->queue_len,
                                                channel->channel_buffer_size,
-                                               channel->notify, BLOCK_SIZE) ? -1 : 0;
+                                               channel->notify, channel->lock,
+                                               channel->unlock, BLOCK_SIZE) ? -1 : 0;
 }
 
 int camkes_virtqueue_device_init_with_recv(virtqueue_device_t *device, unsigned int camkes_virtqueue_id,
@@ -136,7 +137,7 @@ int camkes_virtqueue_device_init_with_recv(virtqueue_device_t *device, unsigned 
     }
 
     return camkes_virtqueue_device_init_common(device, channel->channel_buffer, channel->queue_len,
-                                               channel->notify) ? -1 : 0;
+                                               channel->notify, channel->lock, channel->unlock) ? -1 : 0;
 }
 
 void *camkes_virtqueue_device_offset_to_buffer(virtqueue_device_t *virtqueue, uintptr_t offset)

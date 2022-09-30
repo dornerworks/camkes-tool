@@ -37,6 +37,8 @@ typedef struct virtqueue_channel {
     size_t channel_buffer_size;
     unsigned queue_len;
     void (*notify)(void);
+    int (*lock)(void);
+    int (*unlock)(void);
     seL4_CPtr recv_notification;
     seL4_Word recv_badge;
     virtqueue_role_t role;

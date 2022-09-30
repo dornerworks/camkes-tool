@@ -45,7 +45,7 @@ int camkes_msgqueue_sender_init(int msgqueue_id, camkes_msgqueue_sender_t *sende
     int error = camkes_virtqueue_driver_init_common(&sender->sender_channel, msgqueue_channel->buffer,
                                                     msgqueue_channel->queue_len,
                                                     msgqueue_channel->buffer_size, msgqueue_channel->sender_funcs.notify,
-                                                    aligned_message_size);
+                                                    NULL, NULL, aligned_message_size);
     if (error) {
         return error;
     }
@@ -74,7 +74,8 @@ int camkes_msgqueue_receiver_init(int msgqueue_id, camkes_msgqueue_receiver_t *r
     }
 
     int error = camkes_virtqueue_device_init_common(&receiver->receiver_channel,
-                                                    msgqueue_channel->buffer, msgqueue_channel->queue_len, NULL);
+                                                    msgqueue_channel->buffer, msgqueue_channel->queue_len,
+                                                    NULL, NULL, NULL);
     if (error) {
         return error;
     }
